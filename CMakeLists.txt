@@ -58,5 +58,10 @@ endif()
 # ====================================================================
 
 # Копируем всю папку shaders
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/shaders"
-     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+# file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/shaders"
+#      DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+add_custom_command(TARGET OpenGLWindow POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders"
+    "${CMAKE_CURRENT_BINARY_DIR}/shaders"
+)

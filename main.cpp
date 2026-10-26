@@ -26,7 +26,7 @@ int main()
 									 .build();
 	
     // Загрузка моделей
-    Model ourModel("../resources/meshes/spider/Spider.fbx");
+    Model ourModel("../resources/meshes/Cube/Cube.obj"); 
 
     // Отрисовка в режиме каркаса
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
