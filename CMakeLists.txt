@@ -5,50 +5,58 @@ project(OpenGLWindow)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Отключаем сборку лишних элементов GLFW (документация, тесты)
+# Отключаем сборку лишних элементов GLFW
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-# Подключаем исходный код GLFW
+# Оптимизация сборки Assimp
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE) 
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)  
+
+# Подключаем исходный код зависимостей
 add_subdirectory(dependencies/glfw)
+add_subdirectory(dependencies/assimp)
 
-# Указываем пути к заголовочным файлам GLAD, GLFW, GLM и STB
-include_directories(dependencies/glad/include)
-include_directories(dependencies/glfw/include)
-include_directories(dependencies/glm)
-include_directories(dependencies/stb)
-
-# Создаем исполняемый файл проекта, включая исходник GLAD
+# Создаем исполняемый файл проекта
 add_executable(${PROJECT_NAME} 
     main.cpp 
     stb_image.cpp
     dependencies/glad/src/glad.c
-    camera.h
+    camera.hpp
 )
 
-# Связываем проект с библиотеками GLFW и системным OpenGL
-target_link_libraries(${PROJECT_NAME} glfw)
+# Указываем пути к заголовочным файлам для нашего проекта
+target_include_directories(${PROJECT_NAME} PRIVATE
+    dependencies/glad/include
+    dependencies/glfw/include
+    dependencies/glm
+    dependencies/stb
+    
+    # Исходные инклуды Assimp
+    dependencies/assimp/include
+    # ВАЖНО: сгенерированные CMake файлы Assimp (здесь лежит config.h)
+    ${CMAKE_CURRENT_BINARY_DIR}/dependencies/assimp/include
+    ${CMAKE_CURRENT_BINARY_DIR}/dependencies/assimp
+)
+
+# Связываем проект с библиотеками
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw assimp)
 
 if(WIN32)
-    # На Windows системная библиотека называется opengl32
-    target_link_libraries(${PROJECT_NAME} opengl32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE opengl32)
 elseif(NOT APPLE)
-    # На Linux библиотека называется OpenGL
-    target_link_libraries(${PROJECT_NAME} OpenGL)
+    target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL)
 else()
-    # На macOS используется фреймворк OpenGL
-    target_link_libraries(${PROJECT_NAME} "-framework OpenGL")
+    target_link_libraries(${PROJECT_NAME} PRIVATE "-framework OpenGL")
 endif()
 
 # ====================================================================
 # АВТОМАТИЧЕСКОЕ КОПИРОВАНИЕ РЕСУРСОВ В ПАПКУ СБОРКИ (build)
 # ====================================================================
 
-# Копируем папку с текстурами
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/textures"
-     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
-
-# ИСПРАВЛЕНО: Теперь копируем всю папку shaders со всем ее содержимым
+# Копируем всю папку shaders
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/shaders"
      DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
