@@ -49,6 +49,7 @@ private:
     // Загружаем модель с помощью Assimp и сохраняем полученные меши в векторе meshes
     void loadModel(string const &path)
     {
+        stbi_set_flip_vertically_on_load(true);
         // Чтение файла с помощью Assimp
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace );

@@ -54,7 +54,6 @@ public:
             return;
         }
 
-        stbi_set_flip_vertically_on_load(true);
 	    glEnable(GL_DEPTH_TEST);
     }
 
@@ -113,6 +112,10 @@ private:
             mCamera.ProcessKeyboard(LEFT, mDeltaTime);
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             mCamera.ProcessKeyboard(RIGHT, mDeltaTime);
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+            mCamera.ProcessKeyboard(UP, mDeltaTime);
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+            mCamera.ProcessKeyboard(DOWN, mDeltaTime);
     }
 
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
